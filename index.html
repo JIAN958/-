@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>藿藿秘境 · Forest Dream</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --forest-dark: #0d1f0d;
+      --forest-mid: #1a3a1a;
+      --forest-light: #2d5a2d;
+      --leaf-green: #7cb342;
+      --soft-pink: #f8bbd9;
+      --cream: #f5f0e8;
+      --glow-gold: #ffd54f;
+      --glow-green: #a5d6a7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: url('image/20260629-181439.png') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      color: var(--cream);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, rgba(10, 26, 10, 0.7) 0%, rgba(26, 58, 26, 0.6) 40%, rgba(15, 42, 15, 0.8) 100%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .font-serif-sc {
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .leaf-decoration {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.3;
+    }
+
+    .leaf-top-left {
+      top: -50px;
+      left: -30px;
+      font-size: 120px;
+      color: #4a7c4a;
+      transform: rotate(-30deg);
+      filter: blur(2px);
+      animation: leafSway 6s ease-in-out infinite;
+    }
+
+    .leaf-top-right {
+      top: -30px;
+      right: 50px;
+      font-size: 100px;
+      color: #5a8c5a;
+      transform: rotate(45deg);
+      filter: blur(1px);
+      animation: leafSway 7s ease-in-out infinite reverse;
+    }
+
+    .leaf-bottom-left {
+      bottom: 50px;
+      left: -20px;
+      font-size: 150px;
+      color: #3a6a3a;
+      transform: rotate(20deg);
+      filter: blur(3px);
+      animation: leafSway 8s ease-in-out infinite;
+    }
+
+    @keyframes leafSway {
+      0%, 100% { transform: rotate(-30deg) translateY(0); }
+      50% { transform: rotate(-25deg) translateY(-10px); }
+    }
+
+    .nav-glass {
+      background: rgba(20, 40, 20, 0.4);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(124, 179, 66, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .nav-glass.scrolled {
+      background: rgba(15, 35, 15, 0.7);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 8px 0;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--leaf-green), var(--glow-gold));
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    .hero-section {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      z-index: 5;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .hero-image {
+      width: 100%;
+      max-width: 700px;
+      height: auto;
+      border-radius: 24px;
+      box-shadow: 
+        0 0 80px rgba(165, 214, 167, 0.4),
+        0 0 120px rgba(255, 213, 79, 0.2),
+        0 20px 80px rgba(0, 0, 0, 0.6);
+      animation: glowPulse 4s ease-in-out infinite;
+      object-fit: cover;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        box-shadow: 
+          0 0 60px rgba(165, 214, 167, 0.3),
+          0 0 100px rgba(255, 213, 79, 0.15),
+          0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+      50% {
+        box-shadow: 
+          0 0 80px rgba(165, 214, 167, 0.5),
+          0 0 140px rgba(255, 213, 79, 0.25),
+          0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(ellipse, rgba(165, 214, 167, 0.2) 0%, transparent 70%);
+      z-index: -1;
+      animation: glowExpand 5s ease-in-out infinite;
+    }
+
+    @keyframes glowExpand {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+    }
+
+    .hero-content {
+      z-index: 10;
+    }
+
+    .hero-title {
+      background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 50%, #ffd54f 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7cb342 0%, #558b2f 100%);
+      color: white;
+      padding: 14px 40px;
+      border-radius: 50px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(124, 179, 66, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(124, 179, 66, 0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--cream);
+      padding: 14px 40px;
+      border-radius: 50px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(124, 179, 66, 0.2);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(165, 214, 167, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: rgba(165, 214, 167, 0.5);
+      box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(165, 214, 167, 0.2);
+    }
+
+    .feature-card:hover::before {
+      left: 100%;
+    }
+
+    .feature-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(124, 179, 66, 0.3), rgba(85, 139, 47, 0.2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #a5d6a7;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 1s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .delay-1 { animation-delay: 0.2s; }
+    .delay-2 { animation-delay: 0.4s; }
+    .delay-3 { animation-delay: 0.6s; }
+    .delay-4 { animation-delay: 0.8s; }
+
+    footer {
+      border-top: 1px solid rgba(124, 179, 66, 0.1);
+    }
+
+    @media (max-width: 900px) {
+      .hero-image {
+        max-width: 500px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-image {
+        max-width: 400px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-image {
+        max-width: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <div class="leaf-decoration leaf-top-left">
+    <i class="fas fa-leaf"></i>
+  </div>
+  <div class="leaf-decoration leaf-top-right">
+    <i class="fas fa-seedling"></i>
+  </div>
+  <div class="leaf-decoration leaf-bottom-left">
+    <i class="fas fa-leaf"></i>
+  </div>
+
+  <nav id="navbar" class="nav-glass fixed top-0 left-0 right-0 z-50 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-tree text-2xl" style="color: #a5d6a7;"></i>
+        <span class="font-serif-sc text-xl font-semibold">藿藿秘境</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#home" class="nav-link">首页</a>
+        <a href="#features" class="nav-link">特色</a>
+        <a href="#about" class="nav-link">关于</a>
+        <a href="#contact" class="nav-link">联系</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="text-white/70 hover:text-white transition-colors">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="text-white/70 hover:text-white transition-colors">
+          <i class="fas fa-user"></i>
+        </button>
+        <button id="menuBtn" class="md:hidden text-white/70 hover:text-white transition-colors">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <section id="home" class="hero-section px-6 pt-20 pb-16">
+    <div class="max-w-6xl mx-auto w-full">
+      <div class="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
+        <div class="hero-image-wrapper fade-in order-1 lg:order-2">
+          <div class="hero-glow"></div>
+          <img 
+            src="image/20260629-181439.png" 
+            alt="森林少女"
+            class="hero-image"
+            id="heroImage"
+          >
+        </div>
+        <div class="hero-content text-center lg:text-left fade-in delay-2 order-2 lg:order-1 max-w-lg">
+          <p class="text-sm tracking-widest mb-4" style="color: #a5d6a7;">
+            ✦ WELCOME TO THE FOREST ✦
+          </p>
+          <h1 class="font-serif-sc text-4xl md:text-5xl lg:text-6xl font-bold mb-6 hero-title leading-tight">
+            藿藿秘境
+          </h1>
+          <h2 class="font-serif-sc text-xl md:text-2xl mb-6 text-white/80">
+            自然的治愈
+          </h2>
+          <p class="text-white/60 mb-8 leading-relaxed text-lg">
+            在这片神秘的森林深处，藏着无数未被发现的美好。
+            让我们一起踏上这段梦幻之旅，感受藿藿的温柔与治愈。
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <button class="btn-primary">
+            <i class="fas fa-compass mr-2"></i>
+            开始探索
+          </button>
+          <button class="btn-secondary">
+            <i class="fas fa-play-circle mr-2"></i>
+            了解更多
+          </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="relative z-10 px-6 py-20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16 fade-in">
+        <p class="text-sm tracking-widest mb-4" style="color: #a5d6a7;">
+          ✦ FEATURES ✦
+        </p>
+        <h2 class="font-serif-sc text-3xl md:text-4xl font-bold mb-4 hero-title">
+          藿藿的馈赠
+        </h2>
+        <p class="text-white/60 max-w-2xl mx-auto">
+          每一片叶子都有故事，每一缕阳光都有温度
+        </p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="feature-card fade-in delay-1">
+          <div class="feature-icon">
+            <i class="fas fa-leaf"></i>
+          </div>
+          <h3 class="font-serif-sc text-xl font-semibold mb-3">自然治愈</h3>
+          <p class="text-white/60 leading-relaxed">
+            沉浸在绿色的海洋中，让心灵得到最纯粹的治愈。森林的气息能抚平一切疲惫，带来内心的平静与安宁。
+          </p>
+        </div>
+        <div class="feature-card fade-in delay-2">
+          <div class="feature-icon">
+            <i class="fas fa-spa"></i>
+          </div>
+          <h3 class="font-serif-sc text-xl font-semibold mb-3">静谧时光</h3>
+          <p class="text-white/60 leading-relaxed">
+            远离喧嚣，在大自然中寻找属于自己的静谧时光。听风轻轻吹过，时间仿佛也变得缓慢而温柔。
+          </p>
+        </div>
+        <div class="feature-card fade-in delay-3">
+          <div class="feature-icon">
+            <i class="fas fa-star"></i>
+          </div>
+          <h3 class="font-serif-sc text-xl font-semibold mb-3">梦幻体验</h3>
+          <p class="text-white/60 leading-relaxed">
+            光斑洒落林间，如星辰坠入人间。每一步都是新的发现，每一帧都是绝美的画卷。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="relative z-10 px-6 py-20">
+    <div class="max-w-4xl mx-auto text-center fade-in">
+      <p class="text-sm tracking-widest mb-4" style="color: #a5d6a7;">
+        ✦ ABOUT ✦
+      </p>
+      <h2 class="font-serif-sc text-3xl md:text-4xl font-bold mb-8 hero-title">
+        关于这片森林
+      </h2>
+      <p class="text-white/70 leading-relaxed text-lg mb-8">
+        这是一片被时光遗忘的秘境，绿意盎然，生机勃勃。
+        在这里，每一片叶子都承载着古老的故事，每一缕阳光都带着温暖的力量。
+        我们相信，大自然是最好的治愈师，而森林，是最温柔的港湾。
+      </p>
+      <div class="grid grid-cols-3 gap-8 max-w-md mx-auto">
+        <div class="text-center">
+          <div class="text-3xl font-bold mb-2" style="color: #a5d6a7;">99%</div>
+          <div class="text-white/50 text-sm">治愈指数</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold mb-2" style="color: #ffd54f;">1000+</div>
+          <div class="text-white/50 text-sm">森林物种</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold mb-2" style="color: #f8bbd9;">24h</div>
+          <div class="text-white/50 text-sm">全天开放</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact" class="relative z-10 px-6 py-12 mt-10">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <i class="fas fa-tree text-xl" style="color: #a5d6a7;"></i>
+            <span class="font-serif-sc text-lg font-semibold"藿藿秘境</span>
+          </div>
+          <p class="text-white/50 text-sm leading-relaxed">
+            探寻自然之美<br>感受治愈之力
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">快速链接</h4>
+          <ul class="space-y-2 text-white/50 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">首页</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">特色</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">关于</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">联系</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">联系方式</h4>
+          <ul class="space-y-2 text-white/50 text-sm">
+            <li><i class="fas fa-envelope mr-2"></i>hello@forest.com</li>
+            <li><i class="fas fa-phone mr-2"></i>+86 123 4567 8900</li>
+            <li><i class="fas fa-map-marker-alt mr-2"></i>神秘森林深处</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-4">关注我们</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fab fa-weixin"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fab fa-weibo"></i>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://github.com/JIAN958" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-github"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-white/10 pt-8 text-center text-white/40 text-sm">
+        © 2024 森林秘境 · Forest Dream. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let mouseX = 0;
+    let mouseY = 0;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.size = Math.random() * 4 + 1;
+        this.speedY = Math.random() * 0.5 + 0.2;
+        this.speedX = Math.random() * 0.4 - 0.2;
+        this.opacity = Math.random() * 0.6 + 0.2;
+        this.opacityChange = Math.random() * 0.02 - 0.01;
+        this.swayOffset = Math.random() * Math.PI * 2;
+        this.swaySpeed = Math.random() * 0.01 + 0.005;
+        this.color = Math.random() > 0.7 ? '#ffd54f' : '#a5d6a7';
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.swayOffset += this.swaySpeed;
+        this.x += Math.sin(this.swayOffset) * 0.3 + this.speedX + (mouseX - canvas.width / 2) * 0.0001;
+        this.opacity += this.opacityChange;
+        
+        if (this.opacity <= 0.1 || this.opacity >= 0.8) {
+          this.opacityChange *= -1;
+        }
+
+        if (this.y > canvas.height + 10) {
+          this.reset();
+          this.y = -10;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.opacity;
+        ctx.shadowBlur = this.size * 3;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      const particleCount = Math.min(100, Math.floor(canvas.width * canvas.height / 15000));
+      for (let i = 0; i < particleCount; i++) {
+        const particle = new Particle();
+        particle.y = Math.random() * canvas.height;
+        particles.push(particle);
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      initParticles();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      const heroImage = document.getElementById('heroImage');
+      if (heroImage) {
+        const rect = heroImage.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const deltaX = (e.clientX - centerX) * 0.02;
+        const deltaY = (e.clientY - centerY) * 0.02;
+        heroImage.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+      }
+    });
+
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    resizeCanvas();
+    initParticles();
+    animate();
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
